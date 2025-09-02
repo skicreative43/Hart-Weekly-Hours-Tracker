@@ -27,6 +27,11 @@ def generate_weekly_columns(df):
         df[week.strftime("%Y-%m-%d")] = 0.0
     return df, week_range
 
+def parse_dates(df):
+    df["Project Start Date"] = pd.to_datetime(df["Project Start Date"], errors="coerce")
+    df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
+    return df
+
 def distribute_hours(df, week_range):
     for i, row in df.iterrows():
         if row["Remaining"] > 0:
