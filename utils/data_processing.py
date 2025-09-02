@@ -37,8 +37,34 @@ def parse_dates(df):
     df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
     return df
 
-def distribute_hours(df, week_range):
-    for i, row in df.iterrows():
+
+def distribute_hours(df):
+    df = clean_baseline(df)
+    distributed_data = []
+
+    for idx, row in df.iterrows():
+        start_date = row["Project Start Date"]
+        end_date = row["Project Due Date"]
+
+        if pd.isna(start_date) or pd.isna(end_date):
+            continue
+
+        weeks = pd.date_range(start=start_date, end=end_date, freq='W-MON')
+
+        if len(weeks) == 0:
+            continue
+
+        hours_per_week = row["Current Budget Hours"] / len(weeks)
+
+        for week_start in weeks:
+            week_str = week_start.strftime("%Y-%m-%d")
+            distributed_data.append({
+                "Project Full Name": row["Project Full Name"],
+                "Week Start": week_str,
+                "Estimated Hours": round(hours_per_week, 1)
+            })
+
+    return pd.DataFrame(distributed_data)
         if row["Remaining"] > 0:
             weeks = pd.date_range(start=row["Project Start Date"], end=row["Project Due Date"], freq='W-MON')
             per_week = round(row["Remaining"] / len(weeks), 1) if len(weeks) > 0 else 0
