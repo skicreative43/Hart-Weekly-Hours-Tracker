@@ -21,13 +21,15 @@ def create_weekly_chart(totals_df):
     return fig
 
 
-def _project_table_html(project_df: pd.DataFrame) -> str:
+def _project_table_html(project_df: pd.DataFrame, skipped_projects=None) -> str:
     cols = [
         "Project Full Name",
         "Current Budget Hours",
         "Actual Hours",
         "Remaining",
     ]
+    
+    highlight_projects = set(skipped_projects) if skipped_projects else set()
     df = project_df.copy()
     for c in ["Current Budget Hours", "Actual Hours", "Remaining"]:
         if c in df.columns:
@@ -54,9 +56,20 @@ def _project_table_html(project_df: pd.DataFrame) -> str:
         "<tbody>",
     ]
 
+    
+        row_class = "skipped" if r["Project Full Name"] in highlight_projects else ""
+        row_style = "background-color: #fffac8;" if row_class else ""
     for _, r in df.iterrows():
+        
         html.append(
-            f"<tr>"
+            f"<tr style='{row_style}'>"
+            f"<td style='text-align:left'>{r['Project Full Name']}</td>"
+            f"<td style='text-align:right'>{r['Current Budget Hours']:,.1f}</td>"
+            f"<td style='text-align:right'>{r['Actual Hours']:,.1f}</td>"
+            f"<td style='text-align:right'>{r['Remaining']:,.1f}</td>"
+            f"</tr>"
+        )
+
             f"<td style='text-align:left'>{r['Project Full Name']}</td>"
             f"<td style='text-align:right'>{r['Current Budget Hours']:,.1f}</td>"
             f"<td style='text-align:right'>{r['Actual Hours']:,.1f}</td>"
@@ -77,7 +90,7 @@ def _project_table_html(project_df: pd.DataFrame) -> str:
     return "".join(html)
 
 
-def build_recap_html(grand_est, grand_act, as_of_est, as_of_act, as_of_pct, today, project_df=None):
+def build_recap_html(skipped_projects=None, grand_est, grand_act, as_of_est, as_of_act, as_of_pct, today, project_df=None):
     # Left: original recap blocks
     left = f"""
     <h3>📊 Grand Total Hours</h2>
@@ -96,7 +109,7 @@ def build_recap_html(grand_est, grand_act, as_of_est, as_of_act, as_of_pct, toda
     # Right: mini table of projects from baseline, sorted A→Z, with totals
     right = ""
     if project_df is not None and len(project_df) > 0:
-        right = "<h3>📁 Project Breakdown</h3>" + _project_table_html(project_df)
+        right = "<h3>📁 Project Breakdown</h3>" + _project_table_html(project_df, skipped_projects=skipped_projects)
 
     # Wrap side-by-side using flexbox; on small screens it will stack
     html = f"""

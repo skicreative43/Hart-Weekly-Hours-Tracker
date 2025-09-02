@@ -10,8 +10,8 @@ def clean_baseline(df):
         df.columns[4]: "Actual Hours",
         df.columns[5]: "Remaining"
     })
-    df["Project Start Date"] = pd.to_datetime(df["Project Start Date"], errors='coerce')
-    df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors='coerce')
+    df["Project Start Date"] = pd.to_datetime(df["Project Start Date"], format="%a, %b %d, %Y", errors="coerce")
+    df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
     df["Current Budget Hours"] = pd.to_numeric(df["Current Budget Hours"], errors='coerce')
     df["Actual Hours"] = pd.to_numeric(df["Actual Hours"], errors='coerce')
     df["Remaining"] = (df["Current Budget Hours"] - df["Actual Hours"]).round(1)
@@ -32,35 +32,12 @@ def parse_dates(df):
     df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
     return df
 
-def distribute_hours(df):
-    df = clean_baseline(df)
-    distributed_data = []
+def parse_dates(df):
+    df["Project Start Date"] = pd.to_datetime(df["Project Start Date"], errors="coerce")
+    df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
+    return df
 
-    for idx, row in df.iterrows():
-        start_date = row["Project Start Date"]
-        end_date = row["Project Due Date"]
-
-        if pd.isna(start_date) or pd.isna(end_date):
-            continue
-
-        weeks = pd.date_range(start=start_date, end=end_date, freq='W-MON')
-
-        if len(weeks) == 0:
-            continue
-
-        hours_per_week = row["Current Budget Hours"] / len(weeks)
-
-        for week_start in weeks:
-            week_str = week_start.strftime("%Y-%m-%d")
-            distributed_data.append({
-                "Project Full Name": row["Project Full Name"],
-                "Week Start": week_str,
-                "Estimated Hours": round(hours_per_week, 1)
-            })
-
-    return pd.DataFrame(distributed_data)
-
-def allocate_remaining(df):
+def distribute_hours(df, week_range):
     for i, row in df.iterrows():
         if row["Remaining"] > 0:
             weeks = pd.date_range(start=row["Project Start Date"], end=row["Project Due Date"], freq='W-MON')
@@ -70,23 +47,6 @@ def allocate_remaining(df):
                 if col in df.columns:
                     df.at[i, col] = per_week
     return df
-
-
-def fill_estimated_weekly_columns(baseline_df, estimated_df):
-    """
-    Fills baseline_df's weekly columns with estimated hours from estimated_df.
-    Matches on 'Project Full Name' and 'Week Start'.
-    """
-    for _, row in estimated_df.iterrows():
-        project = row["Project Full Name"]
-        week = row["Week Start"]
-        hours = row["Estimated Hours"]
-
-        if week in baseline_df.columns:
-            baseline_df.loc[baseline_df["Project Full Name"] == project, week] += hours
-
-    return baseline_df
-
 
 def summarize_totals(df, actuals, week_range):
     actuals["Actual Hours"] = pd.to_numeric(actuals["Actual Hours"], errors='coerce')

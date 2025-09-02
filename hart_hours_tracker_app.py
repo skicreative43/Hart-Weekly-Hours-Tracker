@@ -54,10 +54,8 @@ actuals_all = pd.concat(st.session_state["actuals_data"], ignore_index=True)
 
 baseline_df = clean_baseline(baseline_df)
 baseline_df, week_range = generate_weekly_columns(baseline_df)
-estimated_df = distribute_hours(baseline_df)
-baseline_df = fill_estimated_weekly_columns(baseline_df, estimated_df)
+baseline_df = distribute_hours(baseline_df, week_range)
 totals_df = summarize_totals(baseline_df, actuals_all, week_range)
-
 
 # Grand totals and recap
 grand_est = round(baseline_df["Current Budget Hours"].sum())
@@ -77,7 +75,7 @@ fig = create_weekly_chart(totals_df)
 st.plotly_chart(fig, use_container_width=True)
 
 # Recap
-recap_html = build_recap_html(
+recap_html = build_recap_html(skipped_projects=skipped_projects, 
     grand_est, grand_act, as_of_est, as_of_act, as_of_pct, today,
     project_df=baseline_df.sort_values("Project Full Name")
 )
