@@ -1,5 +1,8 @@
 import pandas as pd
- def clean_baseline(df):
+import streamlit as st
+
+
+def clean_baseline(df):
     df.columns = df.columns.str.strip()
     df = df.rename(columns={
         df.columns[0]: "Project Full Name",
@@ -15,7 +18,9 @@ import pandas as pd
     df["Actual Hours"] = pd.to_numeric(df["Actual Hours"], errors='coerce')
     df["Remaining"] = (df["Current Budget Hours"] - df["Actual Hours"]).round(1)
     return df
- def generate_weekly_columns(df):
+
+
+def generate_weekly_columns(df):
     min_start = df["Project Start Date"].min()
     max_due = df["Project Due Date"].max()
     week_range = pd.date_range(start=min_start, end=max_due, freq='W-MON')
@@ -24,26 +29,34 @@ import pandas as pd
     for week in week_range:
         df[week.strftime("%Y-%m-%d")] = 0.0
     return df, week_range
-  import streamlit as st
- def distribute_hours(df, week_range):
+
+
+def distribute_hours(df, week_range):
     skipped_projects = []
     for i, row in df.iterrows():
         start_date = row["Project Start Date"]
         end_date = row["Project Due Date"]
-         if pd.isna(start_date) or pd.isna(end_date):
+
+        if pd.isna(start_date) or pd.isna(end_date):
             skipped_projects.append(row["Project Full Name"])
             continue
-         weeks = pd.date_range(start=start_date, end=end_date, freq='W-MON')
+
+        weeks = pd.date_range(start=start_date, end=end_date, freq='W-MON')
         per_week = round(row["Remaining"] / len(weeks), 1) if len(weeks) > 0 else 0
-         for w in weeks:
+
+        for w in weeks:
             col = w.strftime("%Y-%m-%d")
             if col in df.columns:
                 df.at[i, col] = per_week
-     if skipped_projects:
+
+    if skipped_projects:
         st.warning(f"⚠️ Skipped {len(skipped_projects)} projects due to missing start or end dates.")
         for proj in skipped_projects:
             st.text(f"  - {proj}")
-     return df, skipped_projects
+
+    return df, skipped_projects
+
+
 def summarize_totals(df, actuals, week_range):
     actuals["Actual Hours"] = pd.to_numeric(actuals["Actual Hours"], errors='coerce')
     actuals_sum = actuals.groupby("Week")["Actual Hours"].sum()

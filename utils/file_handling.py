@@ -1,7 +1,8 @@
 import os
 import pandas as pd
 import streamlit as st
- def reset_app_state():
+
+def reset_app_state():
     if os.path.exists("last_baseline.csv"):
         os.remove("last_baseline.csv")
     if os.path.exists("last_actuals.csv"):
@@ -9,11 +10,13 @@ import streamlit as st
     for key in ["baseline_data", "actuals_data"]:
         st.session_state.pop(key, None)
     st.rerun()
- def save_uploaded_baseline(file):
+
+def save_uploaded_baseline(file):
     df = pd.read_csv(file)
     df.to_csv("last_baseline.csv", index=False)
     st.session_state["baseline_data"] = df
- def save_uploaded_actuals(files):
+
+def save_uploaded_actuals(files):
     week_to_actuals = {}
     for file in files:
         df = pd.read_csv(file, skiprows=1, names=["Project Full Name", "Actual Hours"])
