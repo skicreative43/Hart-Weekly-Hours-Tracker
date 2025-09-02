@@ -77,7 +77,7 @@ def _project_table_html(project_df: pd.DataFrame) -> str:
     return "".join(html)
 
 
-def build_recap_html(grand_est, grand_act, as_of_est, as_of_act, as_of_pct, today, project_df=None):
+def build_recap_html(grand_est, grand_act, as_of_est, as_of_act, as_of_pct, today, project_df=None, skipped_projects=None):
     # Left: original recap blocks
     left = f"""
     <h3>📊 Grand Total Hours</h2>
@@ -96,7 +96,7 @@ def build_recap_html(grand_est, grand_act, as_of_est, as_of_act, as_of_pct, toda
     # Right: mini table of projects from baseline, sorted A→Z, with totals
     right = ""
     if project_df is not None and len(project_df) > 0:
-        right = "<h3>📁 Project Breakdown</h3>" + _project_table_html(project_df)
+        right = "<h3>📁 Project Breakdown</h3>" + _project_table_html(project_df, skipped_projects=skipped_projects)
 
     # Wrap side-by-side using flexbox; on small screens it will stack
     html = f"""
