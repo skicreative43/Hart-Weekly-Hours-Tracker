@@ -77,11 +77,14 @@ def summarize_totals(df, actuals, week_range):
     totals = []
     for week in week_range:
         col = week.strftime("%Y-%m-%d")
+        est_hours = round(df[col].sum(), 1) if col in df.columns else 0.0
+        act_hours = round(actuals_sum.get(col, 0.0), 1)
         totals.append({
             "Week": week,
-            "Estimated Hours": round(df[col].sum(), 1),
-            "Actual Hours": round(actuals_sum.get(col, 0.0), 1)
+            "Estimated Hours": est_hours,
+            "Actual Hours": act_hours
         })
     totals_df = pd.DataFrame(totals)
     totals_df["Difference"] = (totals_df["Actual Hours"] - totals_df["Estimated Hours"]).round(1)
     return totals_df
+
