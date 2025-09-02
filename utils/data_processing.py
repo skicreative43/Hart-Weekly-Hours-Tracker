@@ -32,6 +32,11 @@ def parse_dates(df):
     df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
     return df
 
+def parse_dates(df):
+    df["Project Start Date"] = pd.to_datetime(df["Project Start Date"], errors="coerce")
+    df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
+    return df
+
 def distribute_hours(df, week_range):
     for i, row in df.iterrows():
         if row["Remaining"] > 0:
