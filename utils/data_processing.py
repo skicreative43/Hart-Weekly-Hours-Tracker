@@ -10,8 +10,8 @@ def clean_baseline(df):
         df.columns[4]: "Actual Hours",
         df.columns[5]: "Remaining"
     })
-    df["Project Start Date"] = pd.to_datetime(df["Project Start Date"], format="%a, %b %d, %Y", errors="coerce")
-    df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
+    df["Project Start Date"] = pd.to_datetime(df["Project Start Date"], errors='coerce')
+    df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors='coerce')
     df["Current Budget Hours"] = pd.to_numeric(df["Current Budget Hours"], errors='coerce')
     df["Actual Hours"] = pd.to_numeric(df["Actual Hours"], errors='coerce')
     df["Remaining"] = (df["Current Budget Hours"] - df["Actual Hours"]).round(1)
@@ -26,16 +26,6 @@ def generate_weekly_columns(df):
     for week in week_range:
         df[week.strftime("%Y-%m-%d")] = 0.0
     return df, week_range
-
-def parse_dates(df):
-    df["Project Start Date"] = pd.to_datetime(df["Project Start Date"], errors="coerce")
-    df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
-    return df
-
-def parse_dates(df):
-    df["Project Start Date"] = pd.to_datetime(df["Project Start Date"], errors="coerce")
-    df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
-    return df
 
 def distribute_hours(df, week_range):
     for i, row in df.iterrows():
