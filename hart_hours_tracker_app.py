@@ -85,8 +85,6 @@ recap_html = build_recap_html(
     today=today,
     project_df=baseline_df.sort_values("Project Full Name")
 )
-    grand_est=grand_est, grand_act=grand_act, as_of_est=as_of_est, as_of_act=as_of_act, as_of_pct=as_of_pct, today=today, project_df=baseline_df.sort_values("Project Full Name")
-)
 st.markdown(recap_html, unsafe_allow_html=True)
 
 # Export
