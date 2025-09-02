@@ -28,6 +28,7 @@ def _project_table_html(project_df: pd.DataFrame) -> str:
         "Actual Hours",
         "Remaining",
     ]
+    highlight_projects = set(skipped_projects) if skipped_projects else set()
     df = project_df.copy()
     for c in ["Current Budget Hours", "Actual Hours", "Remaining"]:
         if c in df.columns:
@@ -54,7 +55,14 @@ def _project_table_html(project_df: pd.DataFrame) -> str:
         "<tbody>",
     ]
 
-    for _, r in df.iterrows():
+        row_style = "background-color: #fffac8;" if r["Project Full Name"] in highlight_projects else ""
+        html.append(
+            f"<tr style='{row_style}'>"
+            f"<td style='text-align:left'>{r['Project Full Name']}</td>"
+            f"<td style='text-align:right'>{r['Current Budget Hours']:,.1f}</td>"
+            f"<td style='text-align:right'>{r['Actual Hours']:,.1f}</td>"
+            f"<td style='text-align:right'>{r['Remaining']:,.1f}</td>"
+            f"</tr>"
         html.append(
             f"<tr>"
             f"<td style='text-align:left'>{r['Project Full Name']}</td>"
