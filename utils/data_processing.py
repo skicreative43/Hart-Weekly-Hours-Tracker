@@ -15,7 +15,7 @@ def clean_baseline(df):
     df["Current Budget Hours"] = pd.to_numeric(df["Current Budget Hours"], errors='coerce')
     df["Actual Hours"] = pd.to_numeric(df["Actual Hours"], errors='coerce')
     df["Remaining"] = (df["Current Budget Hours"] - df["Actual Hours"]).round(1)
-    return df
+    return df, skipped_projects
 
 def generate_weekly_columns(df):
     min_start = df["Project Start Date"].min()
@@ -53,8 +53,7 @@ def distribute_hours(df, week_range):
         for proj in skipped_projects:
             st.text(f"  - {proj}")
 
-    return df
-
+    return df, skipped_projects
 def summarize_totals(df, actuals, week_range):
     actuals["Actual Hours"] = pd.to_numeric(actuals["Actual Hours"], errors='coerce')
     actuals_sum = actuals.groupby("Week")["Actual Hours"].sum()
