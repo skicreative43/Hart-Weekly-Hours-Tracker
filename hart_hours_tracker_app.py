@@ -5,19 +5,19 @@ from utils.visualization import create_weekly_chart, build_recap_html, export_ht
 import pandas as pd
 import datetime
 import os
- st.set_page_config(layout="wide")
- # Sidebar: Reset app
+st.set_page_config(layout="wide")
+# Sidebar: Reset app
 st.sidebar.header("⚙️ Settings")
 if st.sidebar.button("🔁 Start Fresh"):
-    reset_app_state()
- st.title("📈 Hart Weekly Hours Tracker")
- # Sidebar: Upload files
+reset_app_state()
+st.title("📈 Hart Weekly Hours Tracker")
+# Sidebar: Upload files
 st.sidebar.header("📤 Upload New Files")
 new_baseline = st.sidebar.file_uploader("Upload New Baseline (.csv)", type=["csv"], key="new_baseline")
 new_actuals = st.sidebar.file_uploader("Upload New Actuals (.csv)", type=["csv"], accept_multiple_files=True, key="new_actuals")
 update_chart = st.sidebar.button("🔄 Update Chart")
- if new_baseline:
-    save_uploaded_baseline(new_baseline)
+if new_baseline:
+save_uploaded_baseline(new_baseline)
     st.rerun()
  if new_actuals and update_chart:
     save_uploaded_actuals(new_actuals)
