@@ -15,7 +15,7 @@ def clean_baseline(df):
     df["Current Budget Hours"] = pd.to_numeric(df["Current Budget Hours"], errors='coerce')
     df["Actual Hours"] = pd.to_numeric(df["Actual Hours"], errors='coerce')
     df["Remaining"] = (df["Current Budget Hours"] - df["Actual Hours"]).round(1)
-    return df
+    return df, skipped_projects
 
 def generate_weekly_columns(df):
     min_start = df["Project Start Date"].min()
@@ -25,7 +25,7 @@ def generate_weekly_columns(df):
         week_range = week_range.insert(0, pd.Timestamp('2025-06-30'))
     for week in week_range:
         df[week.strftime("%Y-%m-%d")] = 0.0
-    return df, week_range
+    return df, skipped_projects, week_range
 
 
 import streamlit as st
@@ -53,7 +53,7 @@ def distribute_hours(df, week_range):
         for proj in skipped_projects:
             st.text(f"  - {proj}")
 
-    return df
+    return df, skipped_projects
 def summarize_totals(df, actuals, week_range):
     actuals["Actual Hours"] = pd.to_numeric(actuals["Actual Hours"], errors='coerce')
     actuals_sum = actuals.groupby("Week")["Actual Hours"].sum()
