@@ -1,9 +1,4 @@
-
-
-
-
-
-def create_weekly_chart(totals_df):
+     def create_weekly_chart(totals_df):
     fig = go.Figure()
     fig.add_trace(go.Bar(x=totals_df["Week"], y=totals_df["Estimated Hours"], name="Estimated", marker_color='lightgray'))
     fig.add_trace(go.Bar(x=totals_df["Week"], y=totals_df["Actual Hours"], name="Actual", marker_color='steelblue', opacity=0.56))
@@ -19,9 +14,7 @@ def create_weekly_chart(totals_df):
     )
     fig.update_layout(barmode='overlay', title='Estimated vs Actual Hours per Week', xaxis_title='Week', yaxis_title='Hours')
     return fig
-
-
-def _project_table_html(project_df: pd.DataFrame) -> str:
+  def _project_table_html(project_df: pd.DataFrame) -> str:
     cols = [
     "Project Full Name",
     "Current Budget Hours",
@@ -92,13 +85,11 @@ def build_recap_html(grand_est, grand_act, as_of_est, as_of_act, as_of_pct, toda
     <li><strong>% of Estimated Hours Used:</strong> {as_of_pct}%</li>
     </ul>
     """
-
-    # Right: mini table of projects from baseline, sorted A→Z, with totals
+     # Right: mini table of projects from baseline, sorted A→Z, with totals
     right = ""
     if project_df is not None and len(project_df) > 0:
     right = "<h3>📁 Project Breakdown</h3>" + _project_table_html(project_df, skipped_projects=skipped_projects)
-
-    # Wrap side-by-side using flexbox; on small screens it will stack
+     # Wrap side-by-side using flexbox; on small screens it will stack
     html = f"""
     <style>
     /* Layout */
@@ -107,14 +98,12 @@ def build_recap_html(grand_est, grand_act, as_of_est, as_of_act, as_of_pct, toda
     .recap-wrap {{ display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }}
     .recap-left {{ flex: 1 1 320px; min-width: 280px; }}
     .recap-right {{ flex: 1 1 380px; min-width: 320px; }}
-
-    /* Table base styles */
+     /* Table base styles */
     table.proj-mini {{ border-collapse: collapse; width: 100%; }}
     table.proj-mini th, table.proj-mini td {{ border: 1px solid #ddd; padding: 6px 8px; font-size: 0.95rem; }}
     table.proj-mini thead th {{ background:#f7f7f7; color:#111 !important; }}
     table.proj-mini tr.total td {{ background:#fafafa; border-top: 2px solid #ccc; color:#111 !important; }}
-
-    /* Ensure good contrast when user is in dark mode */
+     /* Ensure good contrast when user is in dark mode */
     @media (prefers-color-scheme: dark) {{
     /* Force high-contrast for the project table */
     .recap-right table.proj-mini th,
@@ -134,9 +123,7 @@ def build_recap_html(grand_est, grand_act, as_of_est, as_of_act, as_of_pct, toda
     </div>
     """
     return html
-
-
-def export_html(fig, recap_html):
+  def export_html(fig, recap_html):
     buffer = BytesIO()
     # Add global CSS to ensure sans-serif fonts in recap section when downloaded
     global_css = (
