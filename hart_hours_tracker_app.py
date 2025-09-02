@@ -55,6 +55,7 @@ actuals_all = pd.concat(st.session_state["actuals_data"], ignore_index=True)
 baseline_df = clean_baseline(baseline_df)
 baseline_df, week_range = generate_weekly_columns(baseline_df)
 estimated_df = distribute_hours(baseline_df)
+baseline_df = fill_estimated_weekly_columns(baseline_df, estimated_df)
 totals_df = summarize_totals(baseline_df, actuals_all, week_range)
 
 

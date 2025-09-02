@@ -71,20 +71,34 @@ def allocate_remaining(df):
                     df.at[i, col] = per_week
     return df
 
+
+def fill_estimated_weekly_columns(baseline_df, estimated_df):
+    """
+    Fills baseline_df's weekly columns with estimated hours from estimated_df.
+    Matches on 'Project Full Name' and 'Week Start'.
+    """
+    for _, row in estimated_df.iterrows():
+        project = row["Project Full Name"]
+        week = row["Week Start"]
+        hours = row["Estimated Hours"]
+
+        if week in baseline_df.columns:
+            baseline_df.loc[baseline_df["Project Full Name"] == project, week] += hours
+
+    return baseline_df
+
+
 def summarize_totals(df, actuals, week_range):
     actuals["Actual Hours"] = pd.to_numeric(actuals["Actual Hours"], errors='coerce')
     actuals_sum = actuals.groupby("Week")["Actual Hours"].sum()
     totals = []
     for week in week_range:
         col = week.strftime("%Y-%m-%d")
-        est_hours = round(df[col].sum(), 1) if col in df.columns else 0.0
-        act_hours = round(actuals_sum.get(col, 0.0), 1)
         totals.append({
             "Week": week,
-            "Estimated Hours": est_hours,
-            "Actual Hours": act_hours
+            "Estimated Hours": round(df[col].sum(), 1),
+            "Actual Hours": round(actuals_sum.get(col, 0.0), 1)
         })
     totals_df = pd.DataFrame(totals)
     totals_df["Difference"] = (totals_df["Actual Hours"] - totals_df["Estimated Hours"]).round(1)
     return totals_df
-
