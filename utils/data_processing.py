@@ -32,12 +32,6 @@ def parse_dates(df):
     df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
     return df
 
-def parse_dates(df):
-    df["Project Start Date"] = pd.to_datetime(df["Project Start Date"], errors="coerce")
-    df["Project Due Date"] = pd.to_datetime(df["Project Due Date"], errors="coerce")
-    return df
-
-
 def distribute_hours(df):
     df = clean_baseline(df)
     distributed_data = []
@@ -65,6 +59,9 @@ def distribute_hours(df):
             })
 
     return pd.DataFrame(distributed_data)
+
+def allocate_remaining(df):
+    for i, row in df.iterrows():
         if row["Remaining"] > 0:
             weeks = pd.date_range(start=row["Project Start Date"], end=row["Project Due Date"], freq='W-MON')
             per_week = round(row["Remaining"] / len(weeks), 1) if len(weeks) > 0 else 0
