@@ -75,7 +75,7 @@ fig = create_weekly_chart(totals_df)
 st.plotly_chart(fig, use_container_width=True)
 
 # Recap
-recap_html = build_recap_html(skipped_projects=skipped_projects, 
+recap_html = build_recap_html(
     skipped_projects=skipped_projects,
     grand_est=grand_est,
     grand_act=grand_act,
