@@ -15,7 +15,7 @@ def clean_baseline(df):
     df["Current Budget Hours"] = pd.to_numeric(df["Current Budget Hours"], errors='coerce')
     df["Actual Hours"] = pd.to_numeric(df["Actual Hours"], errors='coerce')
     df["Remaining"] = (df["Current Budget Hours"] - df["Actual Hours"]).round(1)
-    return df, skipped_projects
+    return df
 
 def generate_weekly_columns(df):
     min_start = df["Project Start Date"].min()
