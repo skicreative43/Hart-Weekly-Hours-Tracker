@@ -21,70 +21,62 @@ def create_weekly_chart(totals_df):
     return fig
 
 
-def _project_table_html(project_df: pd.DataFrame) -> str:
+    def _project_table_html(project_df: pd.DataFrame) -> str:
     cols = [
-        "Project Full Name",
-        "Current Budget Hours",
-        "Actual Hours",
-        "Remaining",
+    "Project Full Name",
+    "Current Budget Hours",
+    "Actual Hours",
+    "Remaining",
     ]
     highlight_projects = set(skipped_projects) if skipped_projects else set()
     df = project_df.copy()
     for c in ["Current Budget Hours", "Actual Hours", "Remaining"]:
-        if c in df.columns:
-            df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0.0)
-        else:
-            df[c] = 0.0
+    if c in df.columns:
+    df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0.0)
+    else:
+    df[c] = 0.0
     if "Project Full Name" not in df.columns:
-        df["Project Full Name"] = "(Unnamed)"
-
+    df["Project Full Name"] = "(Unnamed)"
     df = df[cols].sort_values("Project Full Name", kind="stable").reset_index(drop=True)
-
     total_budget = df["Current Budget Hours"].sum()
     total_actual = df["Actual Hours"].sum()
     total_remaining = df["Remaining"].sum()
-
     html = [
-        "<table class='proj-mini'>",
-        "<thead><tr>"
-        "<th style='text-align:left'>Project</th>"
-        "<th style='text-align:right'>Budget</th>"
-        "<th style='text-align:right'>Actual</th>"
-        "<th style='text-align:right'>Remaining</th>"
-        "</tr></thead>",
-        "<tbody>",
+    "<table class='proj-mini'>",
+    "<thead><tr>"
+    "<th style='text-align:left'>Project</th>"
+    "<th style='text-align:right'>Budget</th>"
+    "<th style='text-align:right'>Actual</th>"
+    "<th style='text-align:right'>Remaining</th>"
+    "</tr></thead>",
+    "<tbody>",
     ]
-
-        row_style = "background-color: #fffac8;" if r["Project Full Name"] in highlight_projects else ""
-        html.append(
-            f"<tr style='{row_style}'>"
-            f"<td style='text-align:left'>{r['Project Full Name']}</td>"
-            f"<td style='text-align:right'>{r['Current Budget Hours']:,.1f}</td>"
-            f"<td style='text-align:right'>{r['Actual Hours']:,.1f}</td>"
-            f"<td style='text-align:right'>{r['Remaining']:,.1f}</td>"
-            f"</tr>"
-        html.append(
-            f"<tr>"
-            f"<td style='text-align:left'>{r['Project Full Name']}</td>"
-            f"<td style='text-align:right'>{r['Current Budget Hours']:,.1f}</td>"
-            f"<td style='text-align:right'>{r['Actual Hours']:,.1f}</td>"
-            f"<td style='text-align:right'>{r['Remaining']:,.1f}</td>"
-            f"</tr>"
-        )
-
+    row_style = "background-color: #fffac8;" if r["Project Full Name"] in highlight_projects else ""
     html.append(
-        f"<tr class='total'>"
-        f"<td style='text-align:left'><strong>Total</strong></td>"
-        f"<td style='text-align:right'><strong>{total_budget:,.1f}</strong></td>"
-        f"<td style='text-align:right'><strong>{total_actual:,.1f}</strong></td>"
-        f"<td style='text-align:right'><strong>{total_remaining:,.1f}</strong></td>"
-        f"</tr>"
+    f"<tr style='{row_style}'>"
+    f"<td style='text-align:left'>{r['Project Full Name']}</td>"
+    f"<td style='text-align:right'>{r['Current Budget Hours']:,.1f}</td>"
+    f"<td style='text-align:right'>{r['Actual Hours']:,.1f}</td>"
+    f"<td style='text-align:right'>{r['Remaining']:,.1f}</td>"
+    f"</tr>"
+    html.append(
+    f"<tr>"
+    f"<td style='text-align:left'>{r['Project Full Name']}</td>"
+    f"<td style='text-align:right'>{r['Current Budget Hours']:,.1f}</td>"
+    f"<td style='text-align:right'>{r['Actual Hours']:,.1f}</td>"
+    f"<td style='text-align:right'>{r['Remaining']:,.1f}</td>"
+    f"</tr>"
     )
-
+    html.append(
+    f"<tr class='total'>"
+    f"<td style='text-align:left'><strong>Total</strong></td>"
+    f"<td style='text-align:right'><strong>{total_budget:,.1f}</strong></td>"
+    f"<td style='text-align:right'><strong>{total_actual:,.1f}</strong></td>"
+    f"<td style='text-align:right'><strong>{total_remaining:,.1f}</strong></td>"
+    f"</tr>"
+    )
     html.append("</tbody></table>")
     return "".join(html)
-
-
 def build_recap_html(grand_est, grand_act, as_of_est, as_of_act, as_of_pct, today, project_df=None, skipped_projects=None):
     # Left: original recap blocks
     left = f"""
